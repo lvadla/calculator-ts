@@ -11,31 +11,31 @@
   <body>
     <main id="content">
       <div id="calculator">
-        <section id="output">42</section>
+        <section data-control="output" id="output"></section>
         <section id="input">
-          <button type="button">AC</button>
-          <button type="button">&plus;/&minus;</button>
-          <button type="button">&percnt;</button>
-          <button type="button">&divide;</button>
+          <button type="button" data-control="clear">AC</button>
+          <button type="button" data-control="negation">&plus;/&minus;</button>
+          <button type="button" data-control="percentage">&percnt;</button>
+          <button type="button" data-operator="/">&divide;</button>
 
-          <button type="button">7</button>
-          <button type="button">8</button>
-          <button type="button">9</button>
-          <button type="button">&times;</button>
+          <button type="button" data-operand="7">7</button>
+          <button type="button" data-operand="8">8</button>
+          <button type="button" data-operand="9">9</button>
+          <button type="button" data-operator="*">&times;</button>
 
-          <button type="button">4</button>
-          <button type="button">5</button>
-          <button type="button">6</button>
-          <button type="button">&minus;</button>
+          <button type="button" data-operand="4">4</button>
+          <button type="button" data-operand="5">5</button>
+          <button type="button" data-operand="6">6</button>
+          <button type="button" data-operator="-">&minus;</button>
 
-          <button type="button">1</button>
-          <button type="button">2</button>
-          <button type="button">3</button>
-          <button type="button">&plus;</button>
+          <button type="button" data-operand="1">1</button>
+          <button type="button" data-operand="2">2</button>
+          <button type="button" data-operand="3">3</button>
+          <button type="button" data-operator="+">&plus;</button>
 
-          <button type="button" class="double">0</button>
-          <button type="button">&sdot;</button>
-          <button type="button">&equals;</button>
+          <button type="button" data-operand="0" class="double">0</button>
+          <button type="button" data-operand=".">.</button>
+          <button type="button" data-operator="=">&equals;</button>
         </section>
       </div>
     </main>
