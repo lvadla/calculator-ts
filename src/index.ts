@@ -39,8 +39,11 @@ function operandListener(el: Element) {
     const operand = el.dataset.operand;
     if (output.textContent) {
       const dot = ".";
+      const zero = "0";
       const lastOperand = trimOutputToFinalOperand(output.textContent);
       const isFraction = !!lastOperand.includes(dot);
+      const isZero = lastOperand === zero;
+      if (isZero && operand === zero) return;
       if (isFraction && operand === dot) return;
     }
     output.textContent += `${operand}`;
