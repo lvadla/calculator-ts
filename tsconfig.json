@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "sourceMap": true,
+    "rootDir": "./src/",
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "skipLibCheck": true,
+    "lib": ["DOM", "ES2015", "ES2016"]
+  },
+  "exclude": ["**/node_modules/*", "**/dist/*"]
+}
