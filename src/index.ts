@@ -17,8 +17,10 @@ operators.forEach((operator) => {
 });
 
 clear?.addEventListener("click", () => {
-  if (output && output.textContent) {
-    output.textContent = "";
+  resetOutput();
+  resetResult();
+});
+
 evaluate?.addEventListener("click", () => {
   if (output?.textContent && output.textContent.length > 0) {
     const total = eval(output.textContent.slice(0, -1));
@@ -29,6 +31,10 @@ evaluate?.addEventListener("click", () => {
 });
 
 function operandListener(el: Element) {
+  if (output?.textContent?.endsWith("=")) {
+    resetOutput();
+    resetResult();
+  }
   if (output && el instanceof HTMLElement) {
     const operand = el.dataset.operand;
     if (output.textContent) {
@@ -57,4 +63,15 @@ function operatorListener(el: Element) {
 
 function trimOutputToFinalOperand(str: string): string {
   return str.replace(/.*(\/|\*|\-|\+|\=)/, "");
+}
+
+function resetOutput() {
+  if (output) {
+    output.textContent = "";
+  }
+}
+function resetResult() {
+  if (result) {
+    result.textContent = "0";
+  }
 }
