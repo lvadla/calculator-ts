@@ -50,6 +50,14 @@ function operandListener(el: Element) {
 function operatorListener(el: Element) {
   if (output && el instanceof HTMLElement) {
     const operator = el.dataset.operator;
+    if (
+      output.textContent?.endsWith("=") &&
+      result?.textContent &&
+      operator !== "="
+    ) {
+      output.textContent = result.textContent;
+      resetResult();
+    }
     if (output.textContent) {
       const lastOperand = trimOutputToFinalOperand(output.textContent);
       if (lastOperand.length > 0 && operator) {
