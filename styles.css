@@ -44,6 +44,12 @@ section#input > button.double {
 }
 
 #output {
-  margin-left: auto;
   height: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+#output > span {
+  text-align: end;
 }

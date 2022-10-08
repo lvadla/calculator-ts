@@ -1,5 +1,10 @@
+let operandHistory: number[] = [];
+let operatorHistory: string[] = [];
+
 const operands = document.querySelectorAll("[data-operand]");
 const operators = document.querySelectorAll("[data-operator]");
+const evaluate = document.querySelector("[data-operator='=']");
+const result = document.querySelector("[data-control='result']");
 const output = document.querySelector("[data-control='output']");
 const clear = document.querySelector("[data-control='clear']");
 
@@ -14,6 +19,12 @@ operators.forEach((operator) => {
 clear?.addEventListener("click", () => {
   if (output && output.textContent) {
     output.textContent = "";
+evaluate?.addEventListener("click", () => {
+  if (output?.textContent && output.textContent.length > 0) {
+    const total = eval(output.textContent.slice(0, -1));
+    if (result?.textContent && result.textContent === "0") {
+      result.textContent = total;
+    }
   }
 });
 
@@ -35,8 +46,10 @@ function operatorListener(el: Element) {
     const operator = el.dataset.operator;
     if (output.textContent) {
       const lastOperand = trimOutputToFinalOperand(output.textContent);
-      if (lastOperand.length > 0) {
+      if (lastOperand.length > 0 && operator) {
         output.textContent += `${operator}`;
+        operandHistory.push(Number(lastOperand));
+        operatorHistory.push(operator);
       }
     }
   }
