@@ -60,7 +60,7 @@ if (!result) throw new Error("a selector was queried for result but not found");
 if (!output) throw new Error("a selector was queried for output but not found");
 const clear = document.querySelector("[data-control='clear']");
 
-const calculator = new Calculator(output, result);
+const calc = new Calculator(output, result);
 
 operands.forEach((operand) => {
   operand.addEventListener("click", () => operandListener(operand));
@@ -71,61 +71,57 @@ operators.forEach((operator) => {
 });
 
 clear?.addEventListener("click", () => {
-  calculator.resetOutput();
-  calculator.resetResult();
+  calc.resetOutput();
+  calc.resetResult();
 });
 
 evaluate?.addEventListener("click", () => {
-  const expression = calculator.outputText;
+  const expression = calc.outputText;
   if (expression && expression.length > 0) {
     const total = eval(expression.slice(0, -1));
-    if (calculator.resultText && calculator.resultText === "0") {
-      calculator.resultText = total;
+    if (calc.resultText && calc.resultText === "0") {
+      calc.resultText = total;
     }
   }
 });
 
 function operandListener(el: Element) {
-  if (calculator.outputText.endsWith("=")) {
-    calculator.resetOutput();
-    calculator.resetResult();
+  if (calc.outputText.endsWith("=")) {
+    calc.resetOutput();
+    calc.resetResult();
   }
   if (output && el instanceof HTMLElement) {
     const operand = el.dataset.operand;
     const dot = ".";
     const zero = "0";
-    const lastOperand = calculator.currentOperand;
+    const lastOperand = calc.currentOperand;
     const isFraction = !!lastOperand.includes(dot);
     const isZero = lastOperand === zero;
     if (isZero && operand === zero) return;
     if (lastOperand === "" && operand === zero) return;
     if (isFraction && operand === dot) return;
-    calculator.outputText += `${operand}`;
-    calculator.currentOperand += `${operand}`;
+    calc.outputText += `${operand}`;
+    calc.currentOperand += `${operand}`;
   }
 }
 
 function operatorListener(el: Element) {
   if (output && el instanceof HTMLElement) {
     const operator = el.dataset.operator;
-    if (
-      calculator.outputText.endsWith("=") &&
-      calculator.resultText &&
-      operator !== "="
-    ) {
-      calculator.outputText = calculator.resultText;
-      calculator.currentOperand = calculator.resultText;
-      calculator.operands = [];
-      calculator.operators = [];
-      calculator.resetResult();
+    if (calc.outputText.endsWith("=") && calc.resultText && operator !== "=") {
+      calc.outputText = calc.resultText;
+      calc.currentOperand = calc.resultText;
+      calc.operands = [];
+      calc.operators = [];
+      calc.resetResult();
     }
     if (output.textContent) {
-      const lastOperand = calculator.currentOperand;
+      const lastOperand = calc.currentOperand;
       if (lastOperand.length > 0 && operator) {
-        calculator.outputText += `${operator}`;
-        calculator.resetCurrentOperand();
-        calculator.operands = [...calculator.operands, Number(lastOperand)];
-        calculator.operators = [...calculator.operators, operator];
+        calc.outputText += `${operator}`;
+        calc.resetCurrentOperand();
+        calc.operands = [...calc.operands, Number(lastOperand)];
+        calc.operators = [...calc.operators, operator];
       }
     }
   }
