@@ -54,17 +54,12 @@ class Calculator {
 const operands = document.querySelectorAll<HTMLButtonElement>("[data-operand]");
 const operators =
   document.querySelectorAll<HTMLButtonElement>("[data-operator]");
-const evaluate = document.querySelector<HTMLButtonElement>(
-  "[data-operator='=']"
-);
-const clear = document.querySelector<HTMLButtonElement>(
-  "[data-control='clear']"
-);
 
-const result = document.querySelector("[data-control='result']");
-const output = document.querySelector("[data-control='output']");
-if (!result) throw new Error("a selector was queried for result but not found");
-if (!output) throw new Error("a selector was queried for output but not found");
+const evaluate = queryElement(HTMLButtonElement, "[data-operator='=']");
+const clear = queryElement(HTMLButtonElement, "[data-control='clear']");
+
+const result = queryElement(HTMLSpanElement, "[data-control='result']");
+const output = queryElement(HTMLSpanElement, "[data-control='output']");
 
 const calc = new Calculator(output, result);
 
@@ -76,12 +71,12 @@ operators.forEach((operator) => {
   operator.addEventListener("click", () => operatorListener(operator));
 });
 
-clear?.addEventListener("click", () => {
+clear.addEventListener("click", () => {
   calc.resetOutput();
   calc.resetResult();
 });
 
-evaluate?.addEventListener("click", () => {
+evaluate.addEventListener("click", () => {
   const expression = calc.outputText;
   if (expression && expression.length > 0) {
     // remove the equals sign for evaluation
@@ -99,43 +94,90 @@ function operandListener(el: HTMLButtonElement) {
     calc.resetOutput();
     calc.resetResult();
   }
-  if (output) {
-    const operand = el.dataset.operand;
-    // handle various operand edge cases
-    const isFraction = !!calc.currentOperand.includes(".");
-    const isZero = calc.currentOperand === "0";
-    // don't allow octal literals
-    if (isZero && operand === "0") return;
-    // can't start a calculation with 0
-    if (calc.currentOperand === "" && operand === "0") return;
-    // fractions have only one decimal place
-    if (isFraction && operand === ".") return;
 
-    calc.outputText += `${operand}`;
-    calc.currentOperand += `${operand}`;
-  }
+  const operand = el.dataset.operand;
+  // handle various operand edge cases
+  const isFraction = !!calc.currentOperand.includes(".");
+  const isZero = calc.currentOperand === "0";
+  // don't allow octal literals
+  if (isZero && operand === "0") return;
+  // can't start a calculation with 0
+  if (calc.currentOperand === "" && operand === "0") return;
+  // fractions have only one decimal place
+  if (isFraction && operand === ".") return;
+
+  calc.outputText += `${operand}`;
+  calc.currentOperand += `${operand}`;
 }
 
 function operatorListener(el: HTMLButtonElement) {
-  if (output) {
-    const operator = el.dataset.operator;
-    // move previous result (ending with '=') to output and build upon them
-    if (calc.outputText.endsWith("=") && calc.resultText && operator !== "=") {
-      calc.outputText = calc.resultText;
-      calc.currentOperand = calc.resultText;
-      calc.operands = [];
-      calc.operators = [];
-      calc.resetResult();
-    }
-    if (output.textContent) {
-      const lastOperand = calc.currentOperand;
-      // push the current operand/operator to history, continue the expression
-      if (lastOperand.length > 0 && operator) {
-        calc.outputText += `${operator}`;
-        calc.resetCurrentOperand();
-        calc.operands = [...calc.operands, Number(lastOperand)];
-        calc.operators = [...calc.operators, operator];
-      }
+  const operator = el.dataset.operator;
+  // move previous result (ending with '=') to output and build upon them
+  if (calc.outputText.endsWith("=") && calc.resultText && operator !== "=") {
+    calc.outputText = calc.resultText;
+    calc.currentOperand = calc.resultText;
+    calc.operands = [];
+    calc.operators = [];
+    calc.resetResult();
+  }
+  if (output.textContent) {
+    const lastOperand = calc.currentOperand;
+    // push the current operand/operator to history, continue the expression
+    if (lastOperand.length > 0 && operator) {
+      calc.outputText += `${operator}`;
+      calc.resetCurrentOperand();
+      calc.operands = [...calc.operands, Number(lastOperand)];
+      calc.operators = [...calc.operators, operator];
     }
   }
+}
+
+/**
+ * Queries a null-checked element of a specific instance type.
+ *
+ * @remarks
+ * slightly modified from https://effectivetypescript.com/2020/07/27/safe-queryselector/
+ *
+ * @param type - the expected type of the element to be queried
+ * @param selector - the selector to query
+ * @param parent - where to query (defaults to document)
+ * @returns the matching element
+ * @throws error if types do not match
+ *
+ */
+function queryElement<T extends typeof Element>(
+  type: T,
+  selector: string,
+  parent?: Document | Element
+): InstanceType<T> {
+  const el = checkedQuerySelector(parent ?? document, selector);
+  if (!(el instanceof type)) {
+    throw new Error(
+      `Selector ${selector} matched ${el} which is not an ${type}`
+    );
+  }
+  return el as InstanceType<T>;
+}
+
+/**
+ * Returns a query selector that has been null checked already.
+ *
+ * @remarks
+ * slightly modified from https://effectivetypescript.com/2020/07/27/safe-queryselector/
+ *
+ * @param parent - where the query selection will be made
+ * @param selector - the selector to query
+ * @returns the matching element
+ * @throws error if nothing matches
+ *
+ */
+function checkedQuerySelector(
+  parent: Element | Document,
+  selector: string
+): Element {
+  const el = parent.querySelector(selector);
+  if (!el) {
+    throw new Error(`Selector ${selector} didn't match any elements.`);
+  }
+  return el;
 }
