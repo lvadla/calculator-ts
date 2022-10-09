@@ -60,6 +60,7 @@ const clear = checkedQuerySelector("[data-control='clear']");
 
 const result = checkedQuerySelector("[data-control='result']");
 const output = checkedQuerySelector("[data-control='output']");
+const negation = checkedQuerySelector("[data-control='negation']");
 
 const calc = new Calculator(output, result);
 
@@ -74,6 +75,22 @@ operators.forEach((operator) => {
 clear.addEventListener("click", () => {
   calc.resetOutput();
   calc.resetResult();
+});
+
+negation.addEventListener("click", () => {
+  if (calc.outputText.endsWith("=") && calc.resultText) {
+    const result = Number(calc.resultText) * -1;
+    calc.outputText = result.toString();
+    calc.currentOperand = result.toString();
+    calc.operands = [];
+    calc.operators = [];
+    calc.resetResult();
+  } else if (calc.currentOperand.length > 0) {
+    const result = -1 * Number(calc.currentOperand);
+    const precedingExpression = calc.outputText.split(calc.currentOperand)[0];
+    calc.currentOperand = result.toString();
+    calc.outputText = `${precedingExpression}${calc.currentOperand}`;
+  }
 });
 
 evaluate.addEventListener("click", () => {
