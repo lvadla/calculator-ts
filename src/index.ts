@@ -55,11 +55,11 @@ const operands = document.querySelectorAll<HTMLButtonElement>("[data-operand]");
 const operators =
   document.querySelectorAll<HTMLButtonElement>("[data-operator]");
 
-const evaluate = queryElement(HTMLButtonElement, "[data-operator='=']");
-const clear = queryElement(HTMLButtonElement, "[data-control='clear']");
+const evaluate = checkedQuerySelector("[data-operator='=']");
+const clear = checkedQuerySelector("[data-control='clear']");
 
-const result = queryElement(HTMLSpanElement, "[data-control='result']");
-const output = queryElement(HTMLSpanElement, "[data-control='output']");
+const result = checkedQuerySelector("[data-control='result']");
+const output = checkedQuerySelector("[data-control='output']");
 
 const calc = new Calculator(output, result);
 
@@ -120,6 +120,7 @@ function operatorListener(el: HTMLButtonElement) {
     calc.operators = [];
     calc.resetResult();
   }
+  // expressions should start with an operand
   if (output.textContent) {
     const lastOperand = calc.currentOperand;
     // push the current operand/operator to history, continue the expression
@@ -130,33 +131,6 @@ function operatorListener(el: HTMLButtonElement) {
       calc.operators = [...calc.operators, operator];
     }
   }
-}
-
-/**
- * Queries a null-checked element of a specific instance type.
- *
- * @remarks
- * slightly modified from https://effectivetypescript.com/2020/07/27/safe-queryselector/
- *
- * @param type - the expected type of the element to be queried
- * @param selector - the selector to query
- * @param parent - where to query (defaults to document)
- * @returns the matching element
- * @throws error if types do not match
- *
- */
-function queryElement<T extends typeof Element>(
-  type: T,
-  selector: string,
-  parent?: Document | Element
-): InstanceType<T> {
-  const el = checkedQuerySelector(parent ?? document, selector);
-  if (!(el instanceof type)) {
-    throw new Error(
-      `Selector ${selector} matched ${el} which is not an ${type}`
-    );
-  }
-  return el as InstanceType<T>;
 }
 
 /**
@@ -172,8 +146,8 @@ function queryElement<T extends typeof Element>(
  *
  */
 function checkedQuerySelector(
-  parent: Element | Document,
-  selector: string
+  selector: string,
+  parent: Element | Document = document
 ): Element {
   const el = parent.querySelector(selector);
   if (!el) {
