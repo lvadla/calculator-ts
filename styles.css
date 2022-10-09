@@ -81,6 +81,10 @@ section#input > button.operator {
   );
 }
 
+section#input > button.control {
+  background: linear-gradient(145deg, var(--darkColor), var(--shadowColor));
+}
+
 #output {
   height: 2.5rem;
   display: flex;
