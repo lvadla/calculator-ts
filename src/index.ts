@@ -51,14 +51,19 @@ class Calculator {
   }
 }
 
-const operands = document.querySelectorAll("[data-operand]");
-const operators = document.querySelectorAll("[data-operator]");
-const evaluate = document.querySelector("[data-operator='=']");
+const operands = document.querySelectorAll<HTMLButtonElement>("[data-operand]");
+const operators =
+  document.querySelectorAll<HTMLButtonElement>("[data-operator]");
+const evaluate = document.querySelector<HTMLButtonElement>(
+  "[data-operator='=']"
+);
 const result = document.querySelector("[data-control='result']");
 const output = document.querySelector("[data-control='output']");
 if (!result) throw new Error("a selector was queried for result but not found");
 if (!output) throw new Error("a selector was queried for output but not found");
-const clear = document.querySelector("[data-control='clear']");
+const clear = document.querySelector<HTMLButtonElement>(
+  "[data-control='clear']"
+);
 
 const calc = new Calculator(output, result);
 
@@ -85,12 +90,12 @@ evaluate?.addEventListener("click", () => {
   }
 });
 
-function operandListener(el: Element) {
+function operandListener(el: HTMLButtonElement) {
   if (calc.outputText.endsWith("=")) {
     calc.resetOutput();
     calc.resetResult();
   }
-  if (output && el instanceof HTMLElement) {
+  if (output) {
     const operand = el.dataset.operand;
     const dot = ".";
     const zero = "0";
@@ -105,8 +110,8 @@ function operandListener(el: Element) {
   }
 }
 
-function operatorListener(el: Element) {
-  if (output && el instanceof HTMLElement) {
+function operatorListener(el: HTMLButtonElement) {
+  if (output) {
     const operator = el.dataset.operator;
     if (calc.outputText.endsWith("=") && calc.resultText && operator !== "=") {
       calc.outputText = calc.resultText;
