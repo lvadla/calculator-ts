@@ -57,13 +57,14 @@ const operators =
 const evaluate = document.querySelector<HTMLButtonElement>(
   "[data-operator='=']"
 );
+const clear = document.querySelector<HTMLButtonElement>(
+  "[data-control='clear']"
+);
+
 const result = document.querySelector("[data-control='result']");
 const output = document.querySelector("[data-control='output']");
 if (!result) throw new Error("a selector was queried for result but not found");
 if (!output) throw new Error("a selector was queried for output but not found");
-const clear = document.querySelector<HTMLButtonElement>(
-  "[data-control='clear']"
-);
 
 const calc = new Calculator(output, result);
 
@@ -83,7 +84,9 @@ clear?.addEventListener("click", () => {
 evaluate?.addEventListener("click", () => {
   const expression = calc.outputText;
   if (expression && expression.length > 0) {
+    // remove the equals sign for evaluation
     const total = eval(expression.slice(0, -1));
+    // prevent reevaluation of an old result
     if (calc.resultText && calc.resultText === "0") {
       calc.resultText = total;
     }
@@ -92,19 +95,22 @@ evaluate?.addEventListener("click", () => {
 
 function operandListener(el: HTMLButtonElement) {
   if (calc.outputText.endsWith("=")) {
+    // a new operator clears a previously evaluated output
     calc.resetOutput();
     calc.resetResult();
   }
   if (output) {
     const operand = el.dataset.operand;
-    const dot = ".";
-    const zero = "0";
-    const lastOperand = calc.currentOperand;
-    const isFraction = !!lastOperand.includes(dot);
-    const isZero = lastOperand === zero;
-    if (isZero && operand === zero) return;
-    if (lastOperand === "" && operand === zero) return;
-    if (isFraction && operand === dot) return;
+    // handle various operand edge cases
+    const isFraction = !!calc.currentOperand.includes(".");
+    const isZero = calc.currentOperand === "0";
+    // don't allow octal literals
+    if (isZero && operand === "0") return;
+    // can't start a calculation with 0
+    if (calc.currentOperand === "" && operand === "0") return;
+    // fractions have only one decimal place
+    if (isFraction && operand === ".") return;
+
     calc.outputText += `${operand}`;
     calc.currentOperand += `${operand}`;
   }
@@ -113,6 +119,7 @@ function operandListener(el: HTMLButtonElement) {
 function operatorListener(el: HTMLButtonElement) {
   if (output) {
     const operator = el.dataset.operator;
+    // move previous result (ending with '=') to output and build upon them
     if (calc.outputText.endsWith("=") && calc.resultText && operator !== "=") {
       calc.outputText = calc.resultText;
       calc.currentOperand = calc.resultText;
@@ -122,6 +129,7 @@ function operatorListener(el: HTMLButtonElement) {
     }
     if (output.textContent) {
       const lastOperand = calc.currentOperand;
+      // push the current operand/operator to history, continue the expression
       if (lastOperand.length > 0 && operator) {
         calc.outputText += `${operator}`;
         calc.resetCurrentOperand();
